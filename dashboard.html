@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThermAI | Logistics Command Center</title>
+    <!-- Using IBM Plex Sans for strict enterprise typography -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Strict Enterprise Color Palette (IBM Carbon Design System inspired) */
+            --ui-background: #f4f4f4;
+            --ui-surface: #ffffff;
+            --text-primary: #161616;
+            --text-secondary: #525252;
+            --border-subtle: #e0e0e0;
+            --border-strong: #8d8d8d;
+            --interactive: #0f62fe;
+            --interactive-hover: #0353e9;
+            --support-error: #da1e28;
+            --support-success: #24a148;
+            --support-warning: #f1c21b;
+            --header-bg: #161616;
+            --header-text: #ffffff;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'IBM Plex Sans', sans-serif; 
+        }
+
+        body { 
+            background-color: var(--ui-background); 
+            color: var(--text-primary); 
+            -webkit-font-smoothing: antialiased; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+        }
+        
+        /* Global Header */
+        .header { 
+            background-color: var(--header-bg); 
+            height: 48px; 
+            display: flex; 
+            align-items: center; 
+            padding: 0 16px; 
+            color: var(--header-text); 
+            flex-shrink: 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .header-brand { font-weight: 600; font-size: 14px; letter-spacing: 0.1px; display: flex; align-items: center; gap: 8px;}
+        .brand-icon { width: 16px; height: 16px; background: var(--interactive); }
+        .header-divider { width: 1px; height: 20px; background: #393939; margin: 0 16px; }
+        .header-title { font-weight: 400; font-size: 14px; color: #c6c6c6;}
+        
+        /* Main Layout */
+        .app-container { display: flex; flex: 1; overflow: hidden; }
+        
+        /* Left Sidebar (Navigation) */
+        .sidebar { 
+            width: 256px; 
+            background-color: var(--ui-surface); 
+            border-right: 1px solid var(--border-subtle); 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .nav-group-title { padding: 24px 16px 8px; font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .nav-item { 
+            padding: 12px 16px; 
+            font-size: 14px; 
+            color: var(--text-secondary); 
+            text-decoration: none; 
+            border-left: 4px solid transparent; 
+            transition: background-color 0.1s; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .nav-item:hover { background-color: #e5e5e5; color: var(--text-primary); }
+        .nav-item.active { background-color: #e5e5e5; border-left-color: var(--interactive); color: var(--text-primary); font-weight: 500; }
+        .nav-count { background: #e0e0e0; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 400;}
+        .nav-count.alert { background: #ffe4e5; color: var(--support-error); font-weight: 600;}
+
+        /* Main Workspace */
+        .main-content { flex: 1; padding: 32px 48px; overflow-y: auto; }
+        
+        .page-header { margin-bottom: 32px; display: flex; justify-content: space-between; align-items: flex-end;}
+        .page-title { font-size: 28px; font-weight: 300; margin-bottom: 8px; letter-spacing: -0.5px;}
+        .page-desc { font-size: 14px; color: var(--text-secondary); }
+        
+        .global-status { font-size: 12px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;}
+
+        /* KPI Row */
+        .kpi-row { display: flex; gap: 16px; margin-bottom: 32px; }
+        .kpi-card { 
+            background: var(--ui-surface); 
+            border: 1px solid var(--border-subtle); 
+            padding: 24px; 
+            flex: 1; 
+            border-top: 2px solid var(--interactive);
+        }
+        .kpi-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; font-weight: 500;}
+        .kpi-value { font-size: 36px; font-weight: 300; color: var(--text-primary); display: flex; align-items: baseline; gap: 4px;}
+        .kpi-unit { font-size: 14px; color: var(--text-secondary); }
+        .kpi-card.warning-border { border-top-color: var(--support-error); }
+        
+        /* Content Grid */
+        .content-grid { display: grid; grid-template-columns: 1fr 450px; gap: 24px; }
+        
+        /* Data Table */
+        .table-container { background: var(--ui-surface); border: 1px solid var(--border-subtle); }
+        .table-header { padding: 16px 24px; border-bottom: 1px solid var(--border-subtle); font-weight: 600; font-size: 16px; display: flex; justify-content: space-between; align-items: center;}
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border-subtle); background: #f4f4f4; text-transform: uppercase; letter-spacing: 0.5px;}
+        td { padding: 16px 24px; font-size: 14px; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); }
+        tr:hover td { background-color: #fcfcfc; cursor: pointer; }
+        tr.selected td { background-color: #e5f0ff; border-left: 2px solid var(--interactive); padding-left: 22px; }
+        
+        /* Status Indicators */
+        .status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 400; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .status.healthy .status-dot { background-color: var(--support-success); }
+        .status.critical .status-dot { background-color: var(--support-error); }
+        .status.rerouting .status-dot { background-color: var(--support-warning); }
+        
+        /* Investigation Panel (Right Side) */
+        .action-panel { background: var(--ui-surface); border: 1px solid var(--support-error); display: flex; flex-direction: column; position: relative;}
+        .action-header { padding: 16px 24px; background: #fff1f1; border-bottom: 1px solid #ffb3b8; font-weight: 600; font-size: 16px; color: var(--support-error); display: flex; align-items: center; gap: 8px;}
+        
+        .action-body { padding: 24px; flex: 1; }
+        
+        /* Technical Graph */
+        .graph-mockup { height: 160px; border: 1px solid var(--border-subtle); margin-bottom: 32px; position: relative; background: #fdfdfd; padding: 16px;}
+        .graph-title { font-size: 12px; color: var(--text-secondary); font-weight: 600; margin-bottom: 16px;}
+        .graph-line { position: absolute; bottom: 80px; left: 16px; width: 45%; height: 2px; background: var(--support-success); }
+        .graph-drop { position: absolute; bottom: 40px; left: 45%; width: 45%; height: 40px; border-top: 2px solid var(--support-error); border-left: 2px solid var(--support-error); border-radius: 4px 0 0 0; }
+        .graph-threshold { position: absolute; bottom: 50px; left: 16px; right: 16px; border-top: 1px dashed var(--border-strong); }
+        .graph-label { position: absolute; bottom: 54px; right: 16px; font-size: 11px; color: var(--text-secondary); }
+        .graph-current-point { position: absolute; bottom: 36px; left: 65%; width: 8px; height: 8px; background: var(--support-error); border-radius: 50%; box-shadow: 0 0 0 4px rgba(218, 30, 40, 0.2);}
+        
+        /* Data Ledger */
+        .data-list { list-style: none; margin-bottom: 32px; border: 1px solid var(--border-subtle); border-top: none;}
+        .data-item { display: flex; justify-content: space-between; padding: 12px 16px; border-top: 1px solid var(--border-subtle); font-size: 14px;}
+        .data-label { color: var(--text-secondary); }
+        .data-val { font-weight: 500; text-align: right;}
+        .data-val.error { color: var(--support-error); }
+        
+        /* Action Button */
+        .btn-primary { background: var(--interactive); color: #fff; border: none; padding: 16px 24px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; transition: 0.2s; letter-spacing: 0.5px;}
+        .btn-primary:hover { background: var(--interactive-hover); }
+        
+        .mesh-alert { margin-top: 16px; padding: 12px 16px; background: #e5f0ff; border-left: 4px solid var(--interactive); font-size: 13px; color: var(--text-primary); line-height: 1.5;}
+    </style>
+</head>
+<body>
+
+    <!-- Global Header -->
+    <header class="header">
+        <div class="header-brand"><div class="brand-icon"></div> ThermAI</div>
+        <div class="header-divider"></div>
+        <div class="header-title">Logistics Command Center &nbsp;|&nbsp; Operations Dashboard</div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="nav-group-title">Overview</div>
+            <a href="#" class="nav-item active">Fleet Monitoring <span class="nav-count alert">1</span></a>
+            <a href="#" class="nav-item">Digital Twin Modeling <span class="nav-count">0</span></a>
+            <a href="#" class="nav-item">Cold Hub Network</a>
+            
+            <div class="nav-group-title">Government & Compliance</div>
+            <a href="#" class="nav-item">MoFPI / PMKSY Status</a>
+            <a href="#" class="nav-item">NITI Frontier Tech Nodes</a>
+            <a href="#" class="nav-item">Scope 3 LCA Proofs</a>
+        </nav>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Fleet Monitoring</h1>
+                    <p class="page-desc">Real-time thermal anomaly detection and autonomous routing.</p>
+                </div>
+                <div class="global-status">
+                    <span style="display:inline-block; width:8px; height:8px; background:var(--support-success); border-radius:50%;"></span>
+                    System Online: V2V Mesh Active (342 Solar-Powered Nodes)
+                </div>
+            </div>
+
+            <!-- KPI Row -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-title">Active Edge Sensors</div>
+                    <div class="kpi-value">2,845</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Value Saved (INR)</div>
+                    <div class="kpi-value">₹4.2 <span class="kpi-unit">Cr</span></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Methane Avoided (Scope 3)</div>
+                    <div class="kpi-value">10.4 <span class="kpi-unit">kT</span></div>
+                </div>
+                <div class="kpi-card warning-border">
+                    <div class="kpi-title">Critical Anomalies</div>
+                    <div class="kpi-value" style="color: var(--support-error);">1</div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <!-- Left Column: Fleet Data -->
+                <div class="table-container">
+                    <div class="table-header">
+                        Active Vehicle Ledger
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vehicle ID</th>
+                                <th>Cargo Ledger</th>
+                                <th>Internal Temp</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fleet-body">
+                            <tr>
+                                <td>MH-01-AB-1234</td>
+                                <td>Dairy (Milk)</td>
+                                <td>2.1°C</td>
+                                <td><div class="status healthy"><div class="status-dot"></div> Nominal</div></td>
+                            </tr>
+                            <tr>
+                                <td>DL-11-CX-9981</td>
+                                <td>Fresh Produce</td>
+                                <td>4.5°C</td>
+                                <td><div class="status healthy"><div class="status-dot"></div> Nominal</div></td>
+                            </tr>
+                            <tr class="selected">
+                                <td>MH-04-EV-1992</td>
+                                <td>Polio Vaccines</td>
+                                <td>-18.2°C</td>
+                                <td><div class="status critical" id="table-status-target"><div class="status-dot"></div> Degradation Detected</div></td>
+                            </tr>
+                            <tr>
+                                <td>KA-05-MM-5555</td>
+                                <td>Seafood</td>
+                                <td>-18.0°C</td>
+                                <td><div class="status healthy"><div class="status-dot"></div> Nominal</div></td>
+                            </tr>
+                            <tr>
+                                <td>GJ-01-ZZ-0012</td>
+                                <td>Pharmaceuticals</td>
+                                <td>5.0°C</td>
+                                <td><div class="status healthy"><div class="status-dot"></div> Nominal</div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right Column: Intervention Panel -->
+                <div class="action-panel" id="action-panel">
+                    <div class="action-header" id="action-header">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zm-.5 3h1v5h-1V4zm.5 8.2c-.4 0-.8-.3-.8-.8s.3-.8.8-.8.8.3.8.8-.3.8-.8.8z"/></svg>
+                        Predictive Failure Detected
+                    </div>
+                    
+                    <div class="action-body">
+                        <div class="graph-mockup">
+                            <div class="graph-title">Digital Twin Thermal Curve: Vaccine Payload</div>
+                            <div class="graph-line"></div>
+                            <div class="graph-drop"></div>
+                            <div class="graph-current-point"></div>
+                            <div class="graph-threshold"></div>
+                            <div class="graph-label">Spoilage Threshold (-15°C)</div>
+                        </div>
+
+                        <ul class="data-list">
+                            <li class="data-item">
+                                <span class="data-label">Target Vehicle</span>
+                                <span class="data-val">MH-04-EV-1992</span>
+                            </li>
+                            <li class="data-item">
+                                <span class="data-label">Anomaly Type</span>
+                                <span class="data-val error">Compressor Micro-Stalls</span>
+                            </li>
+                            <li class="data-item">
+                                <span class="data-label">Value at Risk</span>
+                                <span class="data-val error">₹84.5 Lakhs</span>
+                            </li>
+                            <li class="data-item">
+                                <span class="data-label">Recommended Hub</span>
+                                <span class="data-val">PMKSY Subsidized Hub (14km)</span>
+                            </li>
+                        </ul>
+                        
+                        <button class="btn-primary" id="reroute-btn" onclick="executeReroute()">
+                            Authorize Autonomous Reroute
+                        </button>
+                        
+                        <div class="mesh-alert">
+                            <strong>Note:</strong> Primary cellular connection lost. Alert data retrieved via V2V mesh network (Bounced off Node MH-01-8888).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function executeReroute() {
+            const btn = document.getElementById('reroute-btn');
+            const panel = document.getElementById('action-panel');
+            const header = document.getElementById('action-header');
+            const tableStatus = document.getElementById('table-status-target');
+            
+            // Visual loading state
+            btn.innerHTML = "Processing Reroute Command...";
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                // Success state updates
+                btn.innerHTML = "Reroute Successfully Executed";
+                btn.style.background = "var(--support-success)";
+                
+                panel.style.borderColor = "var(--support-success)";
+                header.style.background = "#defbe6";
+                header.style.borderColor = "#24a148";
+                header.style.color = "var(--support-success)";
+                header.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1C4.1 1 1 4.1 1 8s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7zm-1.3 10.3l-3.3-3.3 1.4-1.4 1.9 1.9 4.9-4.9 1.4 1.4-6.3 6.3z"/></svg> Cargo Secured`;
+                
+                tableStatus.className = "status rerouting";
+                tableStatus.innerHTML = `<div class="status-dot"></div> Rerouting to Hub`;
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
