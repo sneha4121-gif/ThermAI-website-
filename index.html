@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThermAI | Enterprise Cold Chain Intelligence</title>
+    <!-- Using IBM Plex Sans to give it that exact enterprise/IBM/TCS formal look -->
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f62fe; /* Classic Enterprise Blue */
+            --bg-dark: #161616;
+            --bg-light: #f4f4f4;
+            --text-main: #161616;
+            --text-inverse: #ffffff;
+            --secondary: #525252;
+            --border: #e0e0e0;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'IBM Plex Sans', sans-serif; 
+        }
+
+        body { 
+            color: var(--text-main); 
+            background: #ffffff; 
+            line-height: 1.6; 
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Navbar */
+        .navbar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0 5%; 
+            height: 72px; 
+            border-bottom: 1px solid var(--border); 
+            position: sticky; 
+            top: 0; 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(8px);
+            z-index: 100;
+        }
+        
+        .logo { 
+            font-size: 22px; 
+            font-weight: 600; 
+            color: var(--text-main); 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        
+        .logo-box {
+            width: 24px; height: 24px; background: var(--primary); display: inline-block;
+        }
+
+        .nav-links { 
+            display: flex; 
+            gap: 32px; 
+        }
+        
+        .nav-links a { 
+            text-decoration: none; 
+            color: var(--secondary); 
+            font-weight: 400; 
+            font-size: 14px; 
+            transition: 0.2s;
+        }
+        
+        .nav-links a:hover { color: var(--primary); }
+        
+        .btn-primary { 
+            background: var(--primary); 
+            color: #fff; 
+            padding: 12px 24px; 
+            text-decoration: none; 
+            font-weight: 400; 
+            font-size: 14px;
+            border: none; 
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .btn-primary:hover { background: #0353e9; }
+        
+        /* Hero Section */
+        .hero { 
+            background: var(--bg-dark); 
+            color: #fff; 
+            padding: 120px 5%; 
+            display: flex; 
+            align-items: center; 
+            position: relative; 
+            overflow: hidden;
+            min-height: 80vh;
+        }
+        
+        .hero-content { 
+            max-width: 650px; 
+            z-index: 2;
+        }
+        
+        .hero h1 { 
+            font-size: 56px; 
+            font-weight: 300; 
+            line-height: 1.1; 
+            margin-bottom: 24px; 
+            letter-spacing: -1px;
+        }
+        
+        .hero p { 
+            font-size: 18px; 
+            color: #c6c6c6; 
+            margin-bottom: 40px; 
+            font-weight: 300; 
+            max-width: 500px;
+        }
+        
+        .hero-graphic { 
+            position: absolute; 
+            right: 0; 
+            top: 0; 
+            width: 55%; 
+            height: 100%; 
+            background: linear-gradient(90deg, var(--bg-dark) 0%, transparent 100%), url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover; 
+            opacity: 0.6; 
+            z-index: 1;
+        }
+
+        /* Generic Section */
+        .section { padding: 100px 5%; }
+        .section-light { background: var(--bg-light); }
+        .section-dark { background: var(--bg-dark); color: #fff; }
+        
+        .section-header {
+            margin-bottom: 60px;
+            max-width: 800px;
+        }
+        
+        .section-title { 
+            font-size: 36px; 
+            font-weight: 300; 
+            margin-bottom: 16px; 
+            letter-spacing: -0.5px; 
+        }
+        
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--secondary);
+            font-weight: 300;
+        }
+        
+        .section-dark .section-subtitle { color: #c6c6c6; }
+
+        /* 3 Column Grid */
+        .grid-3 { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 24px; 
+        }
+        
+        .card { 
+            background: #fff; 
+            padding: 32px; 
+            border: 1px solid var(--border); 
+            position: relative;
+        }
+        
+        .section-dark .card {
+            background: #262626;
+            border: 1px solid #393939;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: transparent;
+            transition: 0.3s;
+        }
+        
+        .card:hover::before { background: var(--primary); }
+        
+        .card h3 { 
+            font-size: 20px; 
+            margin-bottom: 16px; 
+            font-weight: 400; 
+            color: var(--text-main);
+        }
+        
+        .section-dark .card h3 { color: #fff; }
+        
+        .card p { 
+            color: var(--secondary); 
+            font-size: 15px; 
+            font-weight: 300;
+        }
+        
+        .section-dark .card p { color: #c6c6c6; }
+        
+        .card-stat {
+            font-size: 48px;
+            font-weight: 300;
+            color: var(--primary);
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+
+        /* Split Features (Enterprise Style) */
+        .split { 
+            display: flex; 
+            gap: 60px; 
+            align-items: center; 
+            margin-bottom: 100px;
+        }
+        
+        .split:last-child { margin-bottom: 0; }
+        .split:nth-child(even) { flex-direction: row-reverse; }
+        
+        .split-text { flex: 1; padding-right: 40px;}
+        .split:nth-child(even) .split-text { padding-right: 0; padding-left: 40px;}
+        
+        .feature-tag {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: block;
+        }
+        
+        .split-text h3 { 
+            font-size: 32px; 
+            font-weight: 300; 
+            margin-bottom: 24px; 
+            line-height: 1.2;
+        }
+        
+        .split-text p { 
+            color: var(--secondary); 
+            font-size: 16px; 
+            margin-bottom: 24px; 
+            font-weight: 300;
+        }
+        
+        .bullet-list { list-style: none; }
+        .bullet-list li {
+            padding-left: 24px;
+            position: relative;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: var(--secondary);
+        }
+        .bullet-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+        
+        .split-image { 
+            flex: 1; 
+            height: 400px; 
+            background: var(--border); 
+        }
+        
+        .split-image img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: var(--primary);
+            color: #fff;
+            padding: 80px 5%;
+            text-align: center;
+        }
+        .cta-section h2 { font-size: 36px; font-weight: 300; margin-bottom: 24px; }
+        .btn-inverse { background: #fff; color: var(--primary); padding: 12px 32px; text-decoration: none; font-weight: 500; font-size: 15px; border-radius: 2px; display: inline-block;}
+        .btn-inverse:hover { background: #f4f4f4; }
+
+        /* Footer */
+        .footer { 
+            background: var(--bg-dark); 
+            color: #fff; 
+            padding: 60px 5%; 
+            font-size: 14px; 
+        }
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #393939;
+            padding-bottom: 40px;
+            margin-bottom: 24px;
+        }
+        .footer-logo { font-size: 20px; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .footer-links { display: flex; gap: 40px; color: #8d8d8d; }
+        .footer-links a { color: #8d8d8d; text-decoration: none; }
+        .footer-links a:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <div class="logo-box"></div>
+            ThermAI
+        </div>
+        <div class="nav-links">
+            <a href="#">Platform Economics</a>
+            <a href="#">Sustainability LCA</a>
+            <a href="#">API Integrations</a>
+            <a href="#">Technical Specs</a>
+        </div>
+        <a href="#" class="btn-primary">Request Audit</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-graphic"></div>
+        <div class="hero-content">
+            <h1>Predictive intelligence for India's cold chain.</h1>
+            <p>ThermAI leverages NITI Aayog's Frontier Tech principles—IoT and machine learning—to prevent post-harvest spoilage before it happens, turning ₹92,000 Crore in unpredictable losses into automated logistics interventions.</p>
+            <a href="#" class="btn-primary">Explore the Platform</a>
+        </div>
+    </section>
+
+    <!-- The Problem (Linear Risk) -->
+    <section class="section section-light">
+        <div class="section-header">
+            <h2 class="section-title">The ₹92,000 Crore Post-Harvest Challenge</h2>
+            <p class="section-subtitle">According to the NABCONS study commissioned by the Ministry of Food Processing Industries (MoFPI), India suffers massive post-harvest losses annually due to fragmented cold chain infrastructure.</p>
+        </div>
+        
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-stat">15%</div>
+                <h3>Fruit & Vegetable Loss</h3>
+                <p>NABCONS data reveals post-harvest losses of 6.02% to 15.05% for fruits and up to 11.61% for vegetables before they even reach consumer markets.</p>
+            </div>
+            <div class="card">
+                <div class="card-stat">₹92K Cr</div>
+                <h3>Annual Economic Value</h3>
+                <p>The total value of wasted agricultural produce in India exceeds ₹92,000 crores annually, directly impacting farmer incomes and 3PL profit margins.</p>
+            </div>
+            <div class="card">
+                <div class="card-stat">30% CAGR</div>
+                <h3>Market Expansion</h3>
+                <p>The Indian food cold chain market is projected to grow to $29.2 Billion by 2033. Proactive infrastructure investment is critical to capture this growth.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Solution Features (Split Layout) -->
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">The ThermAI Enterprise Architecture</h2>
+            <p class="section-subtitle">A fully integrated closed-loop mechanics system designed to eliminate spoilage.</p>
+        </div>
+
+        <div class="split">
+            <div class="split-text">
+                <span class="feature-tag">NITI Aayog Frontier Tech Alignment</span>
+                <h3>Decentralized IoT & Edge Computing.</h3>
+                <p>Aligned with NITI Aayog's Frontier Tech initiative, ThermAI deploys AI-driven microclimate engineering and IoT to create sustainable, energy-efficient storage solutions.</p>
+                <ul class="bullet-list">
+                    <li>Integration with <strong>solar-powered</strong> cooling nodes along transit routes.</li>
+                    <li>Empowers Farmer Producer Organizations (FPOs) with decentralized infrastructure.</li>
+                    <li>Supports the "phygital" transition toward decarbonized operations.</li>
+                </ul>
+            </div>
+            <div class="split-image">
+                <img src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Logistics Dashboard">
+            </div>
+        </div>
+
+        <div class="split">
+            <div class="split-text">
+                <span class="feature-tag">Autonomous Rerouting</span>
+                <h3>Predictive ML meets dynamic logistics.</h3>
+                <p>Our edge IoT sensors analyze temperature flux and vibration data via cellular networks. When a failure trajectory is identified, the system acts autonomously.</p>
+                <ul class="bullet-list">
+                    <li>Predicts compressor failure <strong>4-6 hours</strong> in advance.</li>
+                    <li>Integrates with GPS APIs to locate nearest cold-storage hubs.</li>
+                    <li>Pings driver with emergency detour routes to preserve cargo.</li>
+                </ul>
+            </div>
+            <div class="split-image">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Data Analysis">
+            </div>
+        </div>
+        
+        <div class="split">
+            <div class="split-text">
+                <span class="feature-tag">Regulatory Compliance</span>
+                <h3>Immutable ledger for strict pharmaceutical audit trails.</h3>
+                <p>Vaccine and insulin distribution requires strict adherence to global health standards. We provide cryptographic assurance of cargo integrity.</p>
+                <ul class="bullet-list">
+                    <li>Write-once-read-many (WORM) database logging.</li>
+                    <li>Tamper-proof transit reports for health inspectors.</li>
+                    <li><strong>V2V (Vehicle-to-Vehicle) Mesh networking</strong> ensures data integrity even in cellular dead zones.</li>
+                </ul>
+            </div>
+            <div class="split-image">
+                <img src="https://images.unsplash.com/photo-1587854692152-cbe660dbde88?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Pharmaceuticals">
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Section: Platform Economics (Pricing / HaaS) -->
+    <section class="section section-light">
+        <div class="section-header">
+            <h2 class="section-title">Leverage MoFPI Financial Assistance</h2>
+            <p class="section-subtitle">ThermAI's HaaS model perfectly complements the Pradhan Mantri Kisan SAMPADA Yojana (PMKSY) grants for Integrated Cold Chain Infrastructure.</p>
+        </div>
+        <div class="split" style="margin-bottom: 0;">
+            <div class="split-text">
+                <h3 style="font-size: 36px; font-weight: 300; margin-bottom: 10px; color: var(--primary);">Nominal Fee <span style="font-size: 18px; color: var(--secondary);">/ month for subscription</span></h3>
+                <p>By partnering with ThermAI, enterprises and FPOs can seamlessly modernize their fleets. Our systems comply with the Ministry of Food Processing Industries (MoFPI) guidelines for technology upgrades.</p>
+                <ul class="bullet-list" style="margin-top: 24px;">
+                    <li><strong>Up to 50-75% Grants:</strong> Unlock capital investment subsidies provided by MoFPI for value addition infrastructure.</li>
+                    <li><strong>MIDH & NHB Alignment:</strong> Fully compliant with National Horticulture Board standards for CA storage tracking.</li>
+                    <li><strong>Zero CapEx Risk:</strong> Utilize government credit-linked back-ended subsidies while paying only a nominal SaaS fee.</li>
+                </ul>
+            </div>
+            <div class="split-image" style="background: var(--bg-dark); color: white; padding: 40px; display: flex; flex-direction: column; justify-content: center;">
+                 <h4 style="font-size: 24px; font-weight: 300; margin-bottom: 24px; color: var(--primary);">Accelerate Your PMKSY Application</h4>
+                 <p style="font-size: 16px; font-weight: 300; margin-bottom: 32px; color: #c6c6c6;">Let our policy experts assist you in mapping ThermAI sensors into your detailed project report (DPR) for government cold chain grants.</p>
+                 <a href="#" class="btn-primary" style="align-self: flex-start; background: #fff; color: var(--primary);">Consult Our Experts</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Data Section: LCA & Sustainability -->
+    <section class="section section-dark">
+        <div class="section-header" style="text-align: center; margin: 0 auto 60px auto;">
+            <h2 class="section-title" style="border: none; padding: 0;">Verified Scope 3 Reduction (LCA Proof)</h2>
+            <p class="section-subtitle">A Life Cycle Assessment (LCA) proves that averting a single cold chain failure yields exponential climate benefits by taking food out of the linear landfill pipeline.</p>
+        </div>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-stat">~25T</div>
+                <h3>CO2e Prevented</h3>
+                <p>Averting the loss of a standard 10-ton refrigerated payload prevents approximately 25 tons of embedded CO2e emissions from agricultural production and processing.</p>
+            </div>
+            <div class="card">
+                <div class="card-stat">25x</div>
+                <h3>Methane Potency Avoided</h3>
+                <p>Bypassing the landfill entirely eliminates the generation of methane from rotting organics—a greenhouse gas confirmed to be 25x more potent than CO2.</p>
+            </div>
+            <div class="card">
+                <div class="card-stat">>50%</div>
+                <h3>Emissions Reduction</h3>
+                <p>Modeling suggests that utilizing fully optimized predictive cold chain infrastructure can reduce overall food loss-related Scope 3 carbon emissions by more than 50%.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <h2>Eliminate the linear risk in your supply chain.</h2>
+        <p style="margin-bottom: 32px; color: rgba(255,255,255,0.8); font-weight: 300;">Join the top-tier logistics providers securing their cargo with predictive AI.</p>
+        <a href="#" class="btn-inverse">Schedule an API integration audit</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-logo"><div class="logo-box"></div> ThermAI Enterprise</div>
+            <div class="footer-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Sustainability Report</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+        <div style="color: #616161;">
+            © 2026 ThermAI Technologies. All rights reserved. Capstone MVP.
+        </div>
+    </footer>
+
+</body>
+</html>
