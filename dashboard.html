@@ -100,7 +100,14 @@
             border: 1px solid var(--border-subtle); 
             padding: 24px; 
             flex: 1; 
-            border-top: 2px solid var(--interactive);
+            border-top: 3px solid var(--interactive);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.06);
         }
         .kpi-title { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; font-weight: 500;}
         .kpi-value { font-size: 36px; font-weight: 300; color: var(--text-primary); display: flex; align-items: baseline; gap: 4px;}
@@ -111,10 +118,10 @@
         .content-grid { display: grid; grid-template-columns: 1fr 450px; gap: 24px; }
         
         /* Data Table */
-        .table-container { background: var(--ui-surface); border: 1px solid var(--border-subtle); }
+        .table-container { background: var(--ui-surface); border: 1px solid var(--border-subtle); border-radius: 6px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.03);}
         .table-header { padding: 16px 24px; border-bottom: 1px solid var(--border-subtle); font-weight: 600; font-size: 16px; display: flex; justify-content: space-between; align-items: center;}
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 12px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border-subtle); background: #f4f4f4; text-transform: uppercase; letter-spacing: 0.5px;}
+        th { text-align: left; padding: 12px 24px; font-size: 12px; font-weight: 600; color: var(--text-secondary); border-bottom: 1px solid var(--border-subtle); background: #f9f9f9; text-transform: uppercase; letter-spacing: 0.5px;}
         td { padding: 16px 24px; font-size: 14px; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); }
         tr:hover td { background-color: #fcfcfc; cursor: pointer; }
         tr.selected td { background-color: #e5f0ff; border-left: 2px solid var(--interactive); padding-left: 22px; }
@@ -127,8 +134,8 @@
         .status.rerouting .status-dot { background-color: var(--support-warning); }
         
         /* Investigation Panel (Right Side) */
-        .action-panel { background: var(--ui-surface); border: 1px solid var(--support-error); display: flex; flex-direction: column; position: relative;}
-        .action-header { padding: 16px 24px; background: #fff1f1; border-bottom: 1px solid #ffb3b8; font-weight: 600; font-size: 16px; color: var(--support-error); display: flex; align-items: center; gap: 8px;}
+        .action-panel { background: var(--ui-surface); border: 1px solid var(--support-error); display: flex; flex-direction: column; position: relative; border-radius: 6px; box-shadow: 0 8px 24px rgba(218, 30, 40, 0.12); overflow: hidden;}
+        .action-header { padding: 16px 24px; background: #fff1f1; border-bottom: 1px solid #ffb3b8; font-weight: 600; font-size: 15px; color: var(--support-error); display: flex; align-items: center; gap: 8px; letter-spacing: 0.2px;}
         
         .action-body { padding: 24px; flex: 1; }
         
@@ -149,8 +156,8 @@
         .data-val.error { color: var(--support-error); }
         
         /* Action Button */
-        .btn-primary { background: var(--interactive); color: #fff; border: none; padding: 16px 24px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; transition: 0.2s; letter-spacing: 0.5px;}
-        .btn-primary:hover { background: var(--interactive-hover); }
+        .btn-primary { background: var(--interactive); color: #fff; border: none; padding: 14px 24px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; transition: all 0.2s; letter-spacing: 0.3px; border-radius: 4px;}
+        .btn-primary:hover { background: var(--interactive-hover); box-shadow: 0 4px 12px rgba(15, 98, 254, 0.3); transform: translateY(-1px);}
         
         .mesh-alert { margin-top: 16px; padding: 12px 16px; background: #e5f0ff; border-left: 4px solid var(--interactive); font-size: 13px; color: var(--text-primary); line-height: 1.5;}
     </style>
@@ -266,13 +273,31 @@
                     </div>
                     
                     <div class="action-body">
-                        <div class="graph-mockup">
-                            <div class="graph-title">Digital Twin Thermal Curve: Vaccine Payload</div>
-                            <div class="graph-line"></div>
-                            <div class="graph-drop"></div>
-                            <div class="graph-current-point"></div>
-                            <div class="graph-threshold"></div>
-                            <div class="graph-label">Spoilage Threshold (-15°C)</div>
+                        <div class="graph-mockup" style="border: none; padding: 0; background: transparent; height: auto;">
+                            <div style="font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">Thermal Trajectory Prediction</div>
+                            <svg viewBox="0 0 400 120" style="width: 100%; height: 140px; overflow: visible;">
+                                <!-- Threshold Line -->
+                                <line x1="0" y1="80" x2="400" y2="80" stroke="#8d8d8d" stroke-width="1" stroke-dasharray="4 4" />
+                                <text x="390" y="75" text-anchor="end" font-size="11" fill="#8d8d8d">Spoilage Threshold (-15°C)</text>
+                                
+                                <!-- Nominal Temp Curve (Green) -->
+                                <path d="M0,40 C50,45 100,35 150,40 C200,45 220,40 250,40" fill="none" stroke="#24a148" stroke-width="2.5" />
+                                
+                                <!-- Predicted Temp Curve (Red Dashed) -->
+                                <path d="M250,40 C280,40 320,90 400,105" fill="none" stroke="#da1e28" stroke-width="2.5" stroke-dasharray="5 5" />
+                                
+                                <!-- Current Point -->
+                                <circle cx="250" cy="40" r="5" fill="#da1e28" />
+                                <circle cx="250" cy="40" r="12" fill="none" stroke="#da1e28" stroke-width="2" opacity="0.4" />
+                                
+                                <!-- Shaded Error Area -->
+                                <path d="M308,80 L320,90 C360,100 400,105 400,105 L400,80 Z" fill="#ffb3b8" opacity="0.4" />
+                                
+                                <!-- Axes labels -->
+                                <text x="0" y="130" font-size="11" fill="#8d8d8d">-6h</text>
+                                <text x="250" y="130" text-anchor="middle" font-size="11" fill="#da1e28" font-weight="600">NOW (Micro-Stall Detected)</text>
+                                <text x="400" y="130" text-anchor="end" font-size="11" fill="#8d8d8d">+6h</text>
+                            </svg>
                         </div>
 
                         <ul class="data-list">
